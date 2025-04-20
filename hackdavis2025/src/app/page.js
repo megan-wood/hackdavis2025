@@ -2,14 +2,44 @@
 import "./globals.css";
 import { useState } from 'react';
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
+
 import { loginUser } from "./actions";
 import { createUser } from "./actions";
+// import { createContext } from "react";
+// import { useContext } from "react"; 
+// import { createContext, useContext } from 'react';
+
+// const UserContext = createContext();
+
+// export function UserProvider({ children }) {
+//   const [username, setUsername] = useState(null);
+
+//   return (
+//     <UserContext.Provider value={{ username, setUsername }}>
+//       {children}
+//     </UserContext.Provider>
+//   );
+// }
+
+// export function useUser() {
+//   return useContext(UserContext);
+// }
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  async function handleUserLogin() {
+  const { setUsersUsername } = useUser();
+  
+
+  async function handleUserLogin(e) {
+    e.preventDefault();
+    console.log("username 1", username);
     try {
+      console.log("username", username);
       const response = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: {
@@ -19,11 +49,13 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
+      console.log("response", response); 
       if (response.ok) {
         // Login successful!
         console.log('Login successful:', data);
+        setUsersUsername(username);
         // Redirect the user to a protected page
-        navigate('/dashboard'); // Replace '/dashboard' with the desired redirect path
+        router.push("/homePage");
       } else {
         // Login failed
         console.error('Login failed:', data);
