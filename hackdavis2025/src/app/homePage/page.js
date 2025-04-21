@@ -1,8 +1,8 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 
-function ClassForm({username}) {
+function ClassForm({username, refreshClasses}) {
     const [classTitle, setClassTitle] = useState("");
 
     async function handleClassSubmission(e) {
@@ -22,6 +22,7 @@ function ClassForm({username}) {
             // console.log("response: ", data);
             if (response.ok) {
                 console.log("add class successful");
+                refreshClasses();
                 setClassTitle("");
             }
             // setClassTitle("")
@@ -54,12 +55,34 @@ function ClassForm({username}) {
 export default function HomePage() {
     const { username } = useUser();
     console.log("username: ", username);
+    const [classes, setClasses] = useState([]);
 
+    async function getClassesFromDB() {
+        const res = await fetch(`http://localhost:3000/api/getClasses?username=${username}`);
+        const data = await res.json();
+
+        if (res.ok) {
+            setClasses(data.classes);
+        } else {
+            console.error("Error fetching classes:", data.error);
+        }
+    }
+
+    useEffect(() => {
+        if (username) {
+            getClassesFromDB();
+        }
+    }, [username]);
 
     return (
         <>
             <p>Hello {username} </p>
-            <ClassForm username={username}/>
+            <ClassForm username={username} refreshClasses={getClassesFromDB}/>
+            <ul>
+                {classes.map((oneClass, index) => (
+                    <li key={index}>{oneClass.classTitle}</li>
+                ))}
+            </ul>
         </>
     );
 }

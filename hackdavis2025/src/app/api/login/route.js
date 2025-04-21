@@ -20,7 +20,7 @@ export async function POST(req) {
         if (isMatch) {
             console.log("password matches");
             return NextResponse.json(
-                { message: 'User created successfully.' },
+                { message: 'Logged in successfully.' },
                 { status: 200 }
             );
         } else {

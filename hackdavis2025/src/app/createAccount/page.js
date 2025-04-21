@@ -12,8 +12,8 @@ export default function CreateAccount() {
     const [error, setError] = useState('');;
     const { setUsersUsername } = useUser();
 
-    async function handleCreateAccount() {
-        event.preventDefault(); // prevents reload
+    async function handleCreateAccount(e) {
+        e.preventDefault(); // prevents reload
         try {
             console.log("username:", username);
             const response = await fetch('http://localhost:3000/api/createAccount', {
